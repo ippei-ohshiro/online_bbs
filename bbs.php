@@ -1,5 +1,11 @@
 <?php
+//データベース接続
+$link = mysqli_connect("127.0.0.1", "root", "root", "online_bbs", 8889);
+if(!$link){
+    die('データベースに接続できません:' . mysqli_error());
+}
 
+mysqli_select_db('online_bbs', $link);
 
 ?>
 
