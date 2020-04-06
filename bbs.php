@@ -41,7 +41,7 @@ if($_SERVER['REQUEST_METHOD'] === 'post'){
     }
 
     //保存する
-    mysqli_query($sql, $link);
+    mysqli_query($link, $sql);
 }
 ?>
 
