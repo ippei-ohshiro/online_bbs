@@ -1,8 +1,8 @@
 <?php
 //データベース接続
-$link = mysqli_connect("127.0.0.1", "root", "root", "online_bbs", 8889);
+$link = mysqli_connect("localhost", "root", "root", "online_bbs");
 if(!$link){
-    die('データベースに接続できません:' . mysqli_error());
+    die('データベースに接続できません:' . mysqli_error($link));
 }
 
 mysqli_select_db($link, 'online_bbs');
@@ -10,9 +10,9 @@ mysqli_select_db($link, 'online_bbs');
 $errors = array();
 
 //POSTなら保存処理実行
-if($_SERVER['REQUEST_METHOD'] === 'post'){
+// if($_SERVER['REQUEST_METHOD'] === 'post'){
     //名前が正しいかチェック
-    $name = null;
+    $name = "";
     if(!isset($_POST['name']) || !strlen($_POST['name'])){
         $errors['name'] = '名前を正しく入力してください';
     } elseif(strlen($_POST['name']) > 40) {
@@ -22,7 +22,7 @@ if($_SERVER['REQUEST_METHOD'] === 'post'){
     }
 
     //ひとことが正しく入力されているかチェック
-    $comment = null;
+    $comment = "";
     if(!isset($_POST['comment']) || !strlen($_POST['comment'])) {
         $errors['comment'] = 'ひとことを入力してください';
     } elseif(strlen($_POST['comment']) > 200) {
@@ -32,17 +32,17 @@ if($_SERVER['REQUEST_METHOD'] === 'post'){
     }
 
     //エラーがなければ保存
-    if(count($errors) === 0) {
+    if(empty($errors)) {
         //保存用のSQL分作成
         $sql = "INSERT INTO post (name, comment,  created_at) VALUES ('"
-            . mysqli_real_escape_string($name) . "', '"
-            . mysqli_real_escape_string($comment) . "', '"
+            . mysqli_real_escape_string($link, $name) . "', '"
+            . mysqli_real_escape_string($link, $comment) . "', '"
             . date('Y-m-d H:i:s') . "')"; 
+            //保存する
+            mysqli_query($link, $sql);
     }
 
-    //保存する
-    mysqli_query($link, $sql);
-}
+// }
 ?>
 
 
@@ -58,20 +58,20 @@ if($_SERVER['REQUEST_METHOD'] === 'post'){
 
     <form action="bbs.php" method="post">
         <!-- エラーメッセージ -->
-        <?php if(count($errors)): ?>
+        <?php if(isset($errors)): ?>
         <ul class="error_list">
             <?php foreach($errors as $error): ?>
             <li>
-                <?php echo htmlspecialchars($error, ENT_QUOTES) ?>
+                <?php print htmlspecialchars($error, ENT_QUOTES) ?>
             </li>
             <?php endforeach; ?>
         </ul>
         <?php endif; ?>
-        
+
         名前: <input type="text" name="name"><br>
         ひとこと: <input type="text" name="comment" size="60"><br>
         <input type="submit" name="submit" value="送信">
     </form>
-    
+
 </body>
-</html>
+</html> 
