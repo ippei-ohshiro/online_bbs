@@ -8,8 +8,6 @@ if(!$link){
 mysqli_select_db($link, 'online_bbs');
 
 $errors = array();
-
-
     //名前が正しいかチェック
     $name = "";
     if(!isset($_POST['name']) || !strlen($_POST['name'])){
@@ -39,6 +37,9 @@ $errors = array();
             . date('Y-m-d H:i:s') . "')"; 
             //保存する
             mysqli_query($link, $sql);
+            mysqli_close($link);
+
+            header('Location: http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     }
 ?>
 
@@ -69,30 +70,6 @@ $errors = array();
         ひとこと: <input type="text" name="comment" size="60"><br>
         <input type="submit" name="submit" value="送信">
     </form>
-    <?php 
-    //投稿された内容を取得するSQLを作成し、結果を取得
-    $sql = "SELECT * FROM post ORDER BY created_at DESC";
-    $result = mysqli_query($link, $sql);
-    ?>
-
-    <?php if($result !== false && mysqli_num_rows($result)): ?>
-    <ul>
-      
-
-        <?php while($post = mysqli_fetch_assoc($result)): ?>
-        <li>
-            <?php print(htmlspecialchars($post['name'], ENT_QUOTES)); ?>:
-            <?php print(htmlspecialchars($post['comment'], ENT_QUOTES)); ?>
-            - <?php print(htmlspecialchars($post['created_at'], ENT_QUOTES)); ?>
-        </li> 
-        <?php endwhile; ?>
-    </ul>
-    <?php endif; ?>
-    <?php
-    //取得結果開放して接続を閉じる 
-    mysqli_free_result($result);
-    mysqli_close($link);
-    ?>
-
+    <?php include 'views/bbs_view.php'; ?>
 </body>
 </html> 
